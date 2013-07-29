@@ -1,15 +1,55 @@
 /** 
- * @type {{N:Number, start:Number, duration:Number, timerOn:Number, startTimer:function(), stopTimer:function(), resetTimer:function(), nsPerOp:function():Number}}
  * @properties={typeid:35,uuid:"797221B3-A92A-4A75-A0DB-642F2748664E",variableType:-4}
  */
-var Bench;
+var Bench = function () {
+	var b = this;
+	
+	//Number of iterations benchmark should be run
+	b.N = 0,
+	b.start = null;
+	b.duration = null;
+	b.timerOn = false;
+	
+	b.startTimer = function() {
+		if (!b.timerOn) {
+			b.start = nanoTime();
+			b.timerOn = true;
+		}
+	};
+	
+	b.stopTimer = function() {
+		if (b.timerOn) {
+			b.duration += (nanoTime() - b.start);
+			b.timerOn = false;
+		}
+	};
+	
+	b.resetTimer = function() {
+		if (b.timerOn) {
+			b.start = nanoTime();
+		}
+		b.duration = 0;
+	};
+	
+	b.nsPerOp = function() {
+		return (b.N > 0 && (b.duration/b.N)) || 0;
+	}
+}
 
 /**
- * @type {{ops: Number, duration: Number, nsPerOp: Number}}
  *
  * @properties={typeid:35,uuid:"EB3AF1B5-7570-4549-A876-5CAB3A549F52",variableType:-4}
  */
-var BenchmarkResult;
+var BenchmarkResult = function (ops, duration) {
+	var b = this;
+	b.ops = ops;
+	b.duration = duration;
+	
+	/** @type {Number} */
+	b.nsPerOp = (ops > 0 && (duration/ops)) || 0;
+	/** @type {Number} */
+	b.opsPerS = (duration > 0 && ops/(duration/1e9))
+}
 
 /**
  * Target number of nano-seconds to run tests for.
@@ -27,51 +67,23 @@ var benchTime = 1e9;
 var nanoTime = java.lang.System.nanoTime;
 
 /**
- * @type {function(String)}
+ * @param {String} name
+ * @param {BenchmarkResult} r
+ *
  * @properties={typeid:35,uuid:"24A46511-1436-4F39-ABC0-7E6FD91B20F9",variableType:-4}
  */
-var log = function (s) { application.output(s) };
-
-
-/**
- * @return {scopes.benchpress.Bench}
- * @properties={typeid:24,uuid:"4D166714-B6B1-4E65-BE8E-77F8D6395946"}
- */
-function newBench() {
+var log = function (name, r) { 
+	var time = nsToTime(r.nsPerOp);
+	application.output(name + ":\t" + pad(r.ops + " ops\t", 20) + pad(time.time.toFixed(3) + " " + time.unit + "/op\t", 20) + pad(r.opsPerS.toFixed(3) +" ops/sec", 20))
 	
-	/** @type {scopes.benchpress.Bench} */
-	var b = {
-		N : 0,
-		start : null,
-		duration : null,
-		timerOn : false,
-		startTimer: function() {
-			if (!b.timerOn) {
-				b.start = nanoTime();
-				b.timerOn = true;
-			}
-		},
-		stopTimer: function() {
-			if (b.timerOn) {
-				b.duration += (nanoTime() - b.start);
-				b.timerOn = false;
-			}
-		},
-		resetTimer: function() {
-			if (b.timerOn) {
-				b.start = nanoTime();
-			}
-			b.duration = 0;
-		},
-		nsPerOp : function() {
-			if (b.N <= 0) {
-				return 0;
-			}
-			return b.duration/b.N;
+	function pad(s, n) {
+		if (s.length >= n)
+		{
+			return s;
 		}
+		return (new Array(n-s.length+1).join(' ') + s);
 	}
-	return b;
-}
+};
 
 /**
  * @param {scopes.benchpress.Bench} b
@@ -99,7 +111,7 @@ function runNTimes(b, benchmark, n) {
  */
 function launch(benchmark) {
 	
-	var b = newBench();
+	var b = new Bench();
 	
 	//Run the benchmark once to start (in case it's expensive)
 	var n = 1;
@@ -127,12 +139,7 @@ function launch(benchmark) {
         runNTimes(b,benchmark,n);
 	}
 	
-	/** @type {scopes.benchpress.BenchmarkResult} */
-	var result = {
-		ops : n,
-		duration : b.duration,
-		nsPerOp : b.nsPerOp()
-	}
+	var result = new BenchmarkResult(n, b.duration);
 	return result;
 	
 }
@@ -195,8 +202,7 @@ function runAllBenchmarks() {
 		
 		benchmarks.forEach(function (benchmark) {
 			var result = launch(scopes[s][benchmark]);
-			var time = nsToTime(result.nsPerOp);
-			log([s, benchmark].join('.') + ": " + result.ops + " ops at " + time.time + " " + time.unit + "/op.");
+			log([s, benchmark].join('.'), result);
 		});
 	});
 }
