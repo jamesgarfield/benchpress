@@ -71,21 +71,6 @@ var Bench = function () {
 }
 
 /**
- *
- * @properties={typeid:35,uuid:"EB3AF1B5-7570-4549-A876-5CAB3A549F52",variableType:-4}
- */
-var BenchmarkResult = function (ops, duration) {
-	var b = this;
-	b.ops = ops;
-	b.duration = duration;
-	
-	/** @type {Number} */
-	b.nsPerOp = (ops > 0 && (duration/ops)) || 0;
-	/** @type {Number} */
-	b.opsPerS = (duration > 0 && ops/(duration/1e9))
-}
-
-/**
  * @param {String} name
  * @param {Bench} b
  *
