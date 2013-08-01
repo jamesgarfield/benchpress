@@ -24,6 +24,7 @@ var Bench = function () {
 	b.start = null;
 	b.duration = null;
 	b.timerOn = false;
+	b.stddev = null;
 	
 	b.startTimer = function() {
 		if (!b.timerOn) {
@@ -135,11 +136,12 @@ function launch(benchmark) {
 	var n = 1;
 	runNTimes(b,benchmark,n);
 	
+	//Run tests for a minimum amount of time to try and get statistically valid estimates.
 	var last;
 	while (b.duration < benchTime && n < 1e9) {
 		last = n;
 		
-		//Predict iterations/sec
+		//Predict iterations/ns
 		if (b.nsPerOp() == 0) {
 			n = 1e9;
 		}
@@ -157,8 +159,21 @@ function launch(benchmark) {
         runNTimes(b,benchmark,n);
 	}
 	
-	var result = new BenchmarkResult(n, b.duration);
-	return result;
+	//Re-run tests in segments to estimate the standard deviation
+	n = Math.max(Math.floor(n / 20), 1);
+	n = roundUp(n);
+	var expected = b.nsPerOp();
+	var reps = new Bench();
+	var variance = 0;
+	for (var i = 0; i < 20; i++) {
+		runNTimes(reps,benchmark,n);
+		variance += Math.pow((expected-reps.nsPerOp()), 2);
+	}
+	variance = variance/20;
+	b.stddev = Math.sqrt(variance);
+
+
+	return b;
 	
 }
 
