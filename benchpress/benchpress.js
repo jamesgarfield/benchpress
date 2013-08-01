@@ -87,13 +87,14 @@ var BenchmarkResult = function (ops, duration) {
 
 /**
  * @param {String} name
- * @param {BenchmarkResult} r
+ * @param {Bench} b
  *
  * @properties={typeid:35,uuid:"24A46511-1436-4F39-ABC0-7E6FD91B20F9",variableType:-4}
  */
-var log = function (name, r) { 
-	var time = nsToTime(r.nsPerOp);
-	application.output(name + ":\t" + pad(r.ops + " ops\t", 20) + pad(time.time.toFixed(3) + " " + time.unit + "/op\t", 20) + pad(r.opsPerS.toFixed(3) +" ops/sec", 20))
+var log = function (name, b) {
+	var time = nsToTime(b.nsPerOp());
+	var stdDevTime = nsToTime(b.stddev);
+	application.output(name + ":\t" + pad(b.N + " ops\t", 20) + pad(time.time.toFixed(3) + " " + time.unit + "/op\t", 20) + pad(b.opsPerS().toFixed(3) +" ops/sec", 20) + pad(stdDevTime.time.toFixed(3) + " " + stdDevTime.unit, 15))
 	
 	function pad(s, n) {
 		if (s.length >= n)
@@ -235,7 +236,7 @@ function runAllBenchmarks() {
 		
 		benchmarks.forEach(function (benchmark) {
 			var result = launch(scopes[s][benchmark]);
-			log([s, benchmark].join('.'), result);
+			log(benchmark, result);
 		});
 	});
 }
