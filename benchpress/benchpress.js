@@ -55,7 +55,18 @@ var Bench = function () {
 		}
 		return b.duration/b.N;
 	}
+
+	/**
+	 * @return {Number}
+	 */
+	b.opsPerS = function() {
+		if (b.duration <= 0)
+		{
+			return 0;
+		}
+		return b.N/(b.duration/1e9);
 	}
+
 }
 
 /**
