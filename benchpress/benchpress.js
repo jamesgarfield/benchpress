@@ -1,3 +1,18 @@
+/**
+ * Target number of nano-seconds to run tests for.
+ * @type {Number}
+ *
+ * @properties={typeid:35,uuid:"1CEA5B7F-4E92-4087-B0DD-71B9DD9D925D",variableType:8}
+ */
+var benchTime = 1e9;
+
+/**
+ * Local shortcut for high-precision timing.
+ * @type {function():Number}
+ * @properties={typeid:35,uuid:"56B573D2-D629-4779-8D6A-07AFEC2E834A",variableType:-4}
+ */
+var nanoTime = java.lang.System.nanoTime;
+
 /** 
  * @properties={typeid:35,uuid:"797221B3-A92A-4A75-A0DB-642F2748664E",variableType:-4}
  */
@@ -50,21 +65,6 @@ var BenchmarkResult = function (ops, duration) {
 	/** @type {Number} */
 	b.opsPerS = (duration > 0 && ops/(duration/1e9))
 }
-
-/**
- * Target number of nano-seconds to run tests for.
- * @type {Number}
- *
- * @properties={typeid:35,uuid:"1CEA5B7F-4E92-4087-B0DD-71B9DD9D925D",variableType:8}
- */
-var benchTime = 1e9;
-
-/**
- * Local shortcut for high-precision timing.
- * @type {function():Number}
- * @properties={typeid:35,uuid:"56B573D2-D629-4779-8D6A-07AFEC2E834A",variableType:-4}
- */
-var nanoTime = java.lang.System.nanoTime;
 
 /**
  * @param {String} name
