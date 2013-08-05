@@ -219,11 +219,21 @@ function runAllBenchmarks() {
 			return name.indexOf('benchmark_') == 0;
 		});
 		
-		benchmarks.forEach(function (benchmark) {
-			var result = launch(scopes[s][benchmark]);
-			log(benchmark, result);
+		benchmarks.forEach(function (name) {
+			runAndLogBenchmark(name,scopes[s][name]);
 		});
 	});
+}
+
+/**
+ * @param {String} name
+ * @param {function} benchmark
+ *
+ * @properties={typeid:24,uuid:"850A53C1-8041-4AE3-AD4A-D323D21FA168"}
+ */
+function runAndLogBenchmark(name, benchmark) {
+	var result = launch(benchmark);
+	log(name, result);
 }
 
 /**
