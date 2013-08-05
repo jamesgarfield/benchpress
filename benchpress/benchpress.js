@@ -14,9 +14,11 @@ var benchTime = 1e9;
 var nanoTime = java.lang.System.nanoTime;
 
 /** 
- * @properties={typeid:35,uuid:"797221B3-A92A-4A75-A0DB-642F2748664E",variableType:-4}
+ * @constructor 
+ *
+ * @properties={typeid:24,uuid:"ADDD5805-B59A-4106-9768-C00657FC22C6"}
  */
-var Bench = function () {
+function Bench () {
 	var b = this;
 	
 	//Number of iterations benchmark should be run
@@ -79,12 +81,16 @@ var Bench = function () {
 var log = function (name, b) {
 	var time = nsToTime(b.nsPerOp());
 	var stdDevTime = nsToTime(b.stddev);
-	application.output(name + ":\t" + pad(b.N + " ops\t", 20) + pad(time.time.toFixed(3) + " " + time.unit + "/op\t", 20) + pad(b.opsPerS().toFixed(3) +" ops/sec", 20) + pad(stdDevTime.time.toFixed(3) + " " + stdDevTime.unit, 15))
+	application.output(pad(name, 30, true) + "\t" + pad(b.N + " ops\t", 20) + pad(time.time.toFixed(3) + " " + time.unit + "/op\t", 20) + pad(b.opsPerS().toFixed(3) +" ops/sec", 20) + pad(stdDevTime.time.toFixed(3) + " " + stdDevTime.unit, 15))
 	
-	function pad(s, n) {
+	function pad(s, n, append) {
 		if (s.length >= n)
 		{
 			return s;
+		}
+		if (append)
+		{
+			return s+ (new Array(n-s.length+1).join(' '));
 		}
 		return (new Array(n-s.length+1).join(' ') + s);
 	}
