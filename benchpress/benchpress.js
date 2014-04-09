@@ -1,4 +1,11 @@
 /**
+ * @type {String}
+ * @properties={typeid:35,uuid:"3AE987DC-C354-49A1-9808-0CD08BEF8648"}
+*/
+var VERSION = '0.0.1';
+
+
+/**
  * Target number of nano-seconds to run tests for.
  * @type {Number}
  *
